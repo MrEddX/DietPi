@@ -1436,6 +1436,7 @@ Patch_8_21()
 		G_EXEC_OUTPUT=1 G_EXEC dpkg -i package.deb
 		G_EXEC rm package.deb
 	fi
+
 	# Orange Pi 5/ROCK 5B: Update kernel to Linux 5.10.160 as Armbian didn't update their repos for half a year. The "legacy-rockchip-rk3588" and "legacy-rk35xx" kernel families have been merged below the second name: https://github.com/armbian/build/pull/5362
 	if [[ $G_HW_MODEL =~ ^(78|80)$ ]] && { dpkg-query -s 'linux-image-legacy-rockchip-rk3588' &> /dev/null || dpkg --compare-versions "$(dpkg-query -Wf '${Version}' linux-image-legacy-rk35xx 2> /dev/null)" lt-nl 23.08.0; }
 	then
@@ -1448,6 +1449,9 @@ Patch_8_21()
 		dpkg-query -s 'linux-image-legacy-rockchip-rk3588' &> /dev/null && G_EXEC apt-mark auto linux-image-legacy-rockchip-rk3588
 		dpkg-query -s 'linux-dtb-legacy-rockchip-rk3588' &> /dev/null && G_EXEC apt-mark auto linux-dtb-legacy-rockchip-rk3588
 	fi
+
+	# Remove obsolete WiFi hotspot channel setting
+	G_EXEC sed -i '/^[[:blank:]]*SOFTWARE_WIFI_HOTSPOT_CHANNEL=/d' /boot/dietpi.txt
 }
 
 # v6.35 => v7 migration
